@@ -4,6 +4,12 @@ import axios from 'axios';
 import { Shield, Bell, History, Camera, AlertTriangle } from 'lucide-react';
 import './App.css';
 
+
+const BASE_URL = "https://falldetect-backend-raj0412.azurewebsites.net";
+
+
+
+
 interface DetectionRecord {
   id: number;
   timestamp: string;
@@ -21,7 +27,7 @@ const App: React.FC = () => {
   // Fetch detection records from backend
   const fetchRecords = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/records');
+      const response = await axios.get(`${BASE_URL}/records`);
       setRecords(response.data);
     } catch (error) {
       console.error("Error fetching records:", error);
@@ -56,7 +62,7 @@ const App: React.FC = () => {
       const formData = new FormData();
       formData.append('file', blob, 'frame.jpg');
 
-      const response = await axios.post('http://localhost:8000/detect', formData);
+      const response = await axios.post(`${BASE_URL}/detect`, formData);
       setCurrentStreak(response.data.current_streak);
       
       if (response.data.confirmed_fall) {
