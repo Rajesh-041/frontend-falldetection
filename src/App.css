@@ -1,0 +1,224 @@
+:root {
+  --primary: #3b82f6;
+  --danger: #ef4444;
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: white;
+  box-shadow: var(--shadow);
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  background: linear-gradient(90deg, #3b82f6, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  flex: 1;
+}
+
+.camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.webcam-view {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.warning-overlay {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(245, 158, 11, 0.9);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.fall-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(239, 68, 68, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  animation: flash 1s infinite;
+}
+
+@keyframes flash {
+  0% { background: rgba(239, 68, 68, 0.4); }
+  50% { background: rgba(239, 68, 68, 0.6); }
+  100% { background: rgba(239, 68, 68, 0.4); }
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.monitoring {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.idle {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.controls {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-start {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-stop {
+  background: var(--danger);
+  color: white;
+}
+
+.history-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.record-time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.record-status {
+  font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+.text-red {
+  color: var(--danger);
+}
+
+.alert-box {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.alert-msg {
+  color: #9f1239;
+  margin: 0;
+}
+
+.alert-time {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #e11d48;
+}
+
+.pulse-alert {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 900px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+}
