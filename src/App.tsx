@@ -25,7 +25,9 @@ const App: React.FC = () => {
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [lastAlert, setLastAlert] = useState<string | null>(null);
   const [currentStreak, setCurrentStreak] = useState<number>(0);
-
+  
+  // Local state for the "leaky bucket" logic
+  const streakRef = useRef<number>(0);
   const isProcessing = useRef(false);
 
   /* Fetch history records from backend */
@@ -68,12 +70,30 @@ const App: React.FC = () => {
       const response = await axios.post(`${API_BASE_URL}/detect`, formData, {
         headers: { "x-api-key": API_KEY }
       });
-      setCurrentStreak(response.data.current_streak);
+      
+      const { is_fall, confidence } = response.data;
 
-      if (response.data.confirmed_fall) {
+      // -------- FRONTEND STREAK LOGIC --------
+      if (is_fall) {
+        streakRef.current += 1;
+      } else {
+        if (streakRef.current > 0) {
+          streakRef.current -= 1;
+        }
+      }
+
+      // Limit streak to max 10
+      if (streakRef.current > 10) streakRef.current = 10;
+      
+      // Update UI state
+      setCurrentStreak(streakRef.current);
+
+      // Trigger Alert at streak of 3
+      if (streakRef.current >= 3 && !isFallDetected) {
         setIsFallDetected(true);
         setLastAlert(new Date().toLocaleTimeString());
 
+        // Auto-dismiss UI alert after 5 seconds
         setTimeout(() => {
           setIsFallDetected(false);
         }, 5000);
@@ -83,7 +103,7 @@ const App: React.FC = () => {
     } finally {
       isProcessing.current = false;
     }
-  }, [isMonitoring]);
+  }, [isMonitoring, isFallDetected]);
 
   /* Run detection loop */
   useEffect(() => {
@@ -91,6 +111,9 @@ const App: React.FC = () => {
 
     if (isMonitoring) {
       interval = setInterval(captureAndDetect, 200);
+    } else {
+      streakRef.current = 0; // Reset streak when monitoring stops
+      setCurrentStreak(0);
     }
 
     return () => clearInterval(interval);
@@ -126,7 +149,7 @@ const App: React.FC = () => {
                 }`}
               >
                 {isMonitoring
-                  ? `Monitoring Active (Streak: ${currentStreak}/10)`
+                  ? `Monitoring Active (Streak: ${currentStreak}/3)`
                   : "System Idle"}
               </div>
             </div>
@@ -139,9 +162,9 @@ const App: React.FC = () => {
                 className="webcam-view"
               />
 
-              {currentStreak > 0 && currentStreak < 10 && (
+              {currentStreak > 0 && currentStreak < 3 && (
                 <div className="warning-overlay">
-                  <p>Analyzing Potential Fall... ({currentStreak}/10)</p>
+                  <p>Analyzing Potential Fall... ({currentStreak}/3)</p>
                 </div>
               )}
 
