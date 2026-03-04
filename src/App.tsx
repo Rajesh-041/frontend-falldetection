@@ -5,7 +5,7 @@ import { Shield, Bell, History, Camera, AlertTriangle } from 'lucide-react';
 import './App.css';
 
 
-const BASE_URL = "https://falldetect-backend-raj0412.azurewebsites.net";
+const BASE_URL = "http://localhost:8000";
 
 
 
