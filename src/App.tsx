@@ -4,8 +4,8 @@ import axios from "axios";
 import { Shield, Bell, History, Camera, AlertTriangle } from "lucide-react";
 import "./App.css";
 
-/* IMPORTANT: use deployed backend URL */
-const BASE_URL = "https://backendapi1.azurewebsites.net";
+// Fix for TypeScript element type error
+const WebcamComponent = (Webcam as any) as React.ComponentType<any>;
 
 interface DetectionRecord {
   id: number;
@@ -13,6 +13,8 @@ interface DetectionRecord {
   status: string;
   confidence: number;
 }
+
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
 
 const App: React.FC = () => {
   const webcamRef = useRef<any>(null);
@@ -28,7 +30,7 @@ const App: React.FC = () => {
   /* Fetch history records from backend */
   const fetchRecords = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/records`);
+      const response = await axios.get(`${API_BASE_URL}/records`);
       setRecords(response.data);
     } catch (error) {
       console.error("Error fetching records:", error);
@@ -60,8 +62,7 @@ const App: React.FC = () => {
       const formData = new FormData();
       formData.append("file", blob, "frame.jpg");
 
-      const response = await axios.post(`${BASE_URL}/detect`, formData);
-
+      const response = await axios.post(`${API_BASE_URL}/detect`, formData);
       setCurrentStreak(response.data.current_streak);
 
       if (response.data.confirmed_fall) {
@@ -126,7 +127,7 @@ const App: React.FC = () => {
             </div>
 
             <div className="camera-container">
-              <Webcam
+              <WebcamComponent
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
