@@ -15,6 +15,7 @@ interface DetectionRecord {
 }
 
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+const API_KEY = (import.meta as any).env?.VITE_API_KEY || 'fall-detection-secret-2026';
 
 const App: React.FC = () => {
   const webcamRef = useRef<any>(null);
@@ -30,7 +31,9 @@ const App: React.FC = () => {
   /* Fetch history records from backend */
   const fetchRecords = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/records`);
+      const response = await axios.get(`${API_BASE_URL}/records`, {
+        headers: { "x-api-key": API_KEY }
+      });
       setRecords(response.data);
     } catch (error) {
       console.error("Error fetching records:", error);
@@ -62,7 +65,9 @@ const App: React.FC = () => {
       const formData = new FormData();
       formData.append("file", blob, "frame.jpg");
 
-      const response = await axios.post(`${API_BASE_URL}/detect`, formData);
+      const response = await axios.post(`${API_BASE_URL}/detect`, formData, {
+        headers: { "x-api-key": API_KEY }
+      });
       setCurrentStreak(response.data.current_streak);
 
       if (response.data.confirmed_fall) {
