@@ -14,7 +14,7 @@ interface DetectionRecord {
   confidence: number;
 }
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'https://backend-falldetection2-r4054stye-rajesh-041s-projects.vercel.app';
 const API_KEY = (import.meta as any).env?.VITE_API_KEY || 'fall-detection-secret-2026';
 
 const App: React.FC = () => {
