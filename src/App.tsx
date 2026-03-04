@@ -26,6 +26,9 @@ const App: React.FC = () => {
   const [lastAlert, setLastAlert] = useState<string | null>(null);
   const [currentStreak, setCurrentStreak] = useState<number>(0);
   
+  // Debug Info
+  const [debugInfo, setDebugInfo] = useState<{ class_id: number, confidence: number, model_loaded: boolean } | null>(null);
+
   // Local state for the "leaky bucket" logic
   const streakRef = useRef<number>(0);
   const isProcessing = useRef(false);
@@ -71,7 +74,13 @@ const App: React.FC = () => {
         headers: { "x-api-key": API_KEY }
       });
       
-      const { is_fall, confidence } = response.data;
+      const { is_fall, confidence, class_id, model_loaded, error } = response.data;
+      
+      if (error) {
+          console.error("Model error from backend:", error);
+      }
+
+      setDebugInfo({ class_id, confidence, model_loaded });
 
       // -------- FRONTEND STREAK LOGIC --------
       if (is_fall) {
@@ -110,10 +119,11 @@ const App: React.FC = () => {
     let interval: any;
 
     if (isMonitoring) {
-      interval = setInterval(captureAndDetect, 200);
+      interval = setInterval(captureAndDetect, 250); // Every 250ms
     } else {
       streakRef.current = 0; // Reset streak when monitoring stops
       setCurrentStreak(0);
+      setDebugInfo(null);
     }
 
     return () => clearInterval(interval);
@@ -161,6 +171,15 @@ const App: React.FC = () => {
                 screenshotFormat="image/jpeg"
                 className="webcam-view"
               />
+              
+              {/* Debug UI Overlay */}
+              {isMonitoring && debugInfo && (
+                <div className="debug-overlay">
+                  <p>Model: {debugInfo.model_loaded ? "Loaded" : "NOT LOADED"}</p>
+                  <p>Class: {debugInfo.class_id} (0=Fall)</p>
+                  <p>Confidence: {debugInfo.confidence}%</p>
+                </div>
+              )}
 
               {currentStreak > 0 && currentStreak < 3 && (
                 <div className="warning-overlay">
